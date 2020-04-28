@@ -54,6 +54,7 @@ export default {
       }, 1000)
     },
     isDeviceMotion: function(){
+      let self = this;
       if (DeviceMotionEvent &&
         typeof DeviceMotionEvent.requestPermission === 'function'
       ) {
@@ -64,7 +65,7 @@ export default {
           if (permissionState === 'granted') {
             // 許可を得られた場合、devicemotionをイベントリスナーに追加
             window.addEventListener('devicemotion', function(e){
-              return this.deviceMove(e);
+              return self.deviceMove(e);
             });
           } else {
             // 許可を得られなかった場合の処理
