@@ -37,6 +37,9 @@ export default {
   },
   methods: {
     startGame: function(){
+      if (!this.isDeviceMotion()){
+        return;
+      }
       this.gameFlg = true;
 
       let self = this;
@@ -49,6 +52,32 @@ export default {
           self.evaluation = evaluate(self.broccoli);
         }
       }, 1000)
+    },
+    isDeviceMotion: function(){
+      if (DeviceMotionEvent &&
+        typeof DeviceMotionEvent.requestPermission === 'function'
+      ) {
+        // iOS 13+ の Safari
+        // 許可を取得
+        DeviceMotionEvent.requestPermission()
+        .then(function(permissionState){
+          if (permissionState === 'granted') {
+            // 許可を得られた場合、devicemotionをイベントリスナーに追加
+            window.addEventListener('devicemotion', function(e){
+              return this.deviceMove(e);
+            });
+          } else {
+            // 許可を得られなかった場合の処理
+            return false;
+          }
+        })
+        .catch(console.error) // https通信でない場合などで許可を取得できなかった場合
+      } else {
+        // 上記以外のブラウザ
+        console.log('許可されていません。');
+        return false;
+      }
+      return true;
     },
     deviceMove: function(e){
       if (this.gameFlg) {
@@ -63,11 +92,6 @@ export default {
         }
       }
     }
-  },
-  mounted: function(){
-    window.addEventListener('devicemotion', function(e){
-      return this.deviceMove(e);
-    },true);
   }
 }
 
